@@ -222,3 +222,99 @@ p {
 .btn.inline {
   width: auto;
 }
+/* ======== Props / picks ======== */
+.props {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.prop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #1f1f1f;
+  border-radius: 10px;
+  background: #141414;
+}
+.prop .info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.prop .line {
+  color: var(--muted);
+  font-size: 14px;
+}
+.toggle {
+  display: flex;
+  gap: 8px;
+}
+.choice {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #2a2a2a;
+  background: #0f0f0f;
+  color: var(--fg);
+  cursor: pointer;
+}
+.choice.selected {
+  background: var(--accent);
+  color: #000;
+  border-color: transparent;
+}
+.badge.result {
+  background: #2a2a2a;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+/* ======== Props / picks ======== */
+.props {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.prop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #1f1f1f;
+  border-radius: 10px;
+  background: #141414;
+}
+.prop .info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.prop .line {
+  color: var(--muted);
+  font-size: 14px;
+}
+.toggle {
+  display: flex;
+  gap: 8px;
+}
+.choice {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #2a2a2a;
+  background: #0f0f0f;
+  color: var(--fg);
+  cursor: pointer;
+}
+.choice.selected {
+  background: var(--accent);
+  color: #000;
+  border-color: transparent;
+}
+.badge.result {
+  background: #2a2a2a;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}

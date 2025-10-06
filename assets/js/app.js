@@ -294,12 +294,17 @@ document.addEventListener("DOMContentLoaded", () => {
               Starts: ${fmt(t.startsAt)} • Ends: ${fmt(t.endsAt)}
             </p>
             <div class="actions">
-              <button class="btn inline" data-enter="${t.id}" ${
+  <button class="btn inline" data-enter="${t.id}" ${
               t.status !== "open" ? "disabled" : ""
-            }>
-                Enter as my team →
-              </button>
-            </div>
+            }>Enter as my team →</button>
+  <a class="btn inline secondary" href="props.html?t=${
+    t.id
+  }">Make / Edit picks</a>
+  ${
+    t.score != null ? `<span class="badge result">Score: ${t.score}</span>` : ""
+  }
+</div>
+
           </div>
         `
           )
@@ -367,4 +372,138 @@ document.addEventListener("DOMContentLoaded", () => {
   // Boot
   seedTournaments();
   render();
+});
+// -------------------- Props & scoring (props.html) --------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const area = document.getElementById("picksArea");
+  if (!area) return; // not on props.html
+
+  const params = new URLSearchParams(location.search);
+  const tournamentId = params.get("t") || "wk-demo";
+  const TEAM_KEY = "propteams_team";
+  const TOURNAMENTS_KEY = "propteams_tournaments";
+  const PICKS_KEY = `propteams_picks_${tournamentId}`;
+  const RESULTS_KEY = `propteams_results_${tournamentId}`;
+
+  // helpers
+  const load = (k, d) =>
+    JSON.parse(localStorage.getItem(k) || JSON.stringify(d));
+  const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+  function getTournamentList() {
+    return load(TOURNAMENTS_KEY, []);
+  }
+  function setTournamentList(list) {
+    save(TOURNAMENTS_KEY, list);
+  }
+
+  // seed demo props (later: replace with live API)
+  function seedProps() {
+    const existing = load(PICKS_KEY, null);
+    if (existing && existing.props) return existing.props;
+    return [
+      { id: "p1", player: "J. Jefferson", stat: "Receiving Yds", line: 89.5 },
+      { id: "p2", player: "C. McCaffrey", stat: "Rushing Yds", line: 84.5 },
+      { id: "p3", player: "P. Mahomes", stat: "Pass TDs", line: 2.5 },
+      { id: "p4", player: "J. Allen", stat: "Rush+Rec Yds", line: 49.5 },
+      { id: "p5", player: "A. St. Brown", stat: "Receptions", line: 6.5 },
+    ];
+  }
+
+  const team = load(TEAM_KEY, null);
+  if (!team || !team.name) {
+    area.innerHTML = `
+      <div class="card"><p class="error">No team found. Please create a team first.</p>
+      <div class="actions" style="margin-top:10px;">
+        <a class="btn inline" href="create-team.html">Create Team</a>
+      </div></div>`;
+    return;
+  }
+
+  const props = seedProps();
+  let picks = load(PICKS_KEY, { teamName: team.name, props, selections: {} });
+  let results = load(RESULTS_KEY, null); // { p1:'over', p2:'under', ... }
+
+  function render() {
+    area.innerHTML = `
+      <div class="card">
+        <p class="note">Team: <strong>${
+          team.name
+        }</strong> • Tournament: ${tournamentId}</p>
+        <div class="props">
+          ${props
+            .map((p) => {
+              const sel = picks.selections[p.id];
+              const res = results?.[p.id];
+              return `
+              <div class="prop">
+                <div class="info">
+                  <strong>${p.player}</strong>
+                  <span class="line">${p.stat} — ${p.line}</span>
+                </div>
+                <div class="toggle">
+                  <button class="choice ${
+                    sel === "over" ? "selected" : ""
+                  }" data-p="${p.id}" data-v="over">Over</button>
+                  <button class="choice ${
+                    sel === "under" ? "selected" : ""
+                  }" data-p="${p.id}" data-v="under">Under</button>
+                </div>
+                ${
+                  res
+                    ? `<span class="badge result">${res.toUpperCase()}</span>`
+                    : ``
+                }
+              </div>
+            `;
+            })
+            .join("")}
+        </div>
+      </div>
+    `;
+    area.querySelectorAll(".choice").forEach((btn) => {
+      btn.onclick = () => {
+        const id = btn.getAttribute("data-p");
+        const val = btn.getAttribute("data-v");
+        picks.selections[id] = val;
+        save(PICKS_KEY, picks);
+        render();
+      };
+    });
+  }
+
+  render();
+
+  document.getElementById("savePicks").onclick = () => {
+    save(PICKS_KEY, picks);
+    document.getElementById(
+      "pickStatus"
+    ).innerHTML = `<p class="note">Picks saved ✅</p>`;
+  };
+
+  document.getElementById("setResults").onclick = () => {
+    const demo = {};
+    props.forEach((p) => (demo[p.id] = Math.random() > 0.5 ? "over" : "under"));
+    results = demo;
+    save(RESULTS_KEY, results);
+    gradeAndStoreScore();
+    render();
+    document.getElementById(
+      "pickStatus"
+    ).innerHTML = `<p class="note">Results set & graded ✅</p>`;
+  };
+
+  function gradeAndStoreScore() {
+    let score = 0;
+    Object.keys(results || {}).forEach((pid) => {
+      if (picks.selections[pid] && picks.selections[pid] === results[pid])
+        score += 1;
+    });
+    const ts = getTournamentList();
+    const t = ts.find((x) => x.id === tournamentId) || ts[0];
+    if (t) {
+      t.score = score;
+      setTournamentList(ts);
+    }
+  }
 });
