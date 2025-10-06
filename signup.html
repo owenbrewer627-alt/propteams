@@ -1,27 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PropTeams — Sign Up</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <header class="nav">
-    <div class="logo">PropTeams</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="signup.html" class="active">Sign Up</a>
-      <a href="create-team.html">Create Team</a>
-      <a href="tournaments.html">Tournaments</a>
-    </nav>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PropTeams — Sign Up</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="logo">PropTeams</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="signup.html" class="active">Sign Up</a>
+        <a href="create-team.html">Create Team</a>
+        <a href="tournaments.html">Tournaments</a>
+      </nav>
+    </header>
 
-  <main class="container">
-    <h1>Create your account</h1>
-    <p>(Form coming soon.)</p>
-  </main>
+    <main class="container">
+      <h1>Create your account</h1>
+      <p>Join PropTeams to build squads and enter tournaments.</p>
 
-  <script src="assets/js/app.js"></script>
-</body>
+      <form id="signupForm" novalidate class="form">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Jane Doe"
+            required
+          />
+          <small class="error" id="nameError"></small>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+          />
+          <small class="error" id="emailError"></small>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="At least 8 characters"
+            required
+          />
+          <small class="error" id="passwordError"></small>
+        </div>
+
+        <div class="field">
+          <label for="confirm">Confirm password</label>
+          <input
+            id="confirm"
+            name="confirm"
+            type="password"
+            placeholder="Type it again"
+            required
+          />
+          <small class="error" id="confirmError"></small>
+        </div>
+
+        <div class="check">
+          <input id="terms" name="terms" type="checkbox" />
+          <label for="terms">I agree to the Terms</label>
+        </div>
+        <small class="error" id="termsError"></small>
+
+        <button type="submit" class="btn">Create account</button>
+        <p class="note">
+          No emails will be sent — this is a local demo for now.
+        </p>
+      </form>
+    </main>
+
+    <script src="assets/js/app.js"></script>
+  </body>
 </html>
