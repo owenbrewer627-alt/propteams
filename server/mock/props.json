@@ -1,0 +1,12 @@
+[
+  {
+    "id": "p1",
+    "player": "J. Jefferson",
+    "stat": "Receiving Yds",
+    "line": 89.5
+  },
+  { "id": "p2", "player": "C. McCaffrey", "stat": "Rushing Yds", "line": 84.5 },
+  { "id": "p3", "player": "P. Mahomes", "stat": "Pass TDs", "line": 2.5 },
+  { "id": "p4", "player": "J. Allen", "stat": "Rush+Rec Yds", "line": 49.5 },
+  { "id": "p5", "player": "A. St. Brown", "stat": "Receptions", "line": 6.5 }
+]

@@ -7,3 +7,12 @@
 # Node (future)
 node_modules/
 dist/
+# Ignore environment variables
+.env
+
+# Ignore Node dependencies
+node_modules
+
+# Logs
+npm-debug.log
+yarn-error.log

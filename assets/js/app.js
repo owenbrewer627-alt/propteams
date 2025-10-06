@@ -397,17 +397,19 @@ document.addEventListener("DOMContentLoaded", () => {
     save(TOURNAMENTS_KEY, list);
   }
 
-  // seed demo props (later: replace with live API)
-  function seedProps() {
-    const existing = load(PICKS_KEY, null);
-    if (existing && existing.props) return existing.props;
-    return [
-      { id: "p1", player: "J. Jefferson", stat: "Receiving Yds", line: 89.5 },
-      { id: "p2", player: "C. McCaffrey", stat: "Rushing Yds", line: 84.5 },
-      { id: "p3", player: "P. Mahomes", stat: "Pass TDs", line: 2.5 },
-      { id: "p4", player: "J. Allen", stat: "Rush+Rec Yds", line: 49.5 },
-      { id: "p5", player: "A. St. Brown", stat: "Receptions", line: 6.5 },
-    ];
+  // Try to load props from the local API first
+  async function fetchPropsFromApi(tournamentId) {
+    try {
+      const resp = await fetch(
+        `http://localhost:4000/api/props?t=${encodeURIComponent(tournamentId)}`
+      );
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      return data.props || [];
+    } catch (e) {
+      console.warn("API fetch failed, using local seed:", e.message);
+      return null; // tell caller to fall back
+    }
   }
 
   const team = load(TEAM_KEY, null);
@@ -420,9 +422,33 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const props = seedProps();
-  let picks = load(PICKS_KEY, { teamName: team.name, props, selections: {} });
-  let results = load(RESULTS_KEY, null); // { p1:'over', p2:'under', ... }
+  let props = [];
+  let picks = {}; // we'll set this after props load
+
+  async function loadProps() {
+    // 1) Try the API
+    const apiProps = await fetchPropsFromApi(tournamentId);
+    if (apiProps && apiProps.length) {
+      props = apiProps;
+      picks = load(PICKS_KEY, { teamName: team.name, props, selections: {} });
+      render(); // show UI with API props
+      return;
+    }
+
+    // 2) Fallback to the original static list (Day 7)
+    props = [
+      { id: "p1", player: "J. Jefferson", stat: "Receiving Yds", line: 89.5 },
+      { id: "p2", player: "C. McCaffrey", stat: "Rushing Yds", line: 84.5 },
+      { id: "p3", player: "P. Mahomes", stat: "Pass TDs", line: 2.5 },
+      { id: "p4", player: "J. Allen", stat: "Rush+Rec Yds", line: 49.5 },
+      { id: "p5", player: "A. St. Brown", stat: "Receptions", line: 6.5 },
+    ];
+    picks = load(PICKS_KEY, { teamName: team.name, props, selections: {} });
+    render();
+  }
+
+  // Call once when props.html loads
+  loadProps();
 
   function render() {
     area.innerHTML = `
