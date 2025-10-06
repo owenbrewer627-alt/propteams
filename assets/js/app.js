@@ -209,3 +209,162 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => document.getElementById("teamSavedNote")?.remove(), 1500);
   });
 });
+// -------------------- Tournaments logic --------------------
+// -------------------- Tournaments logic --------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const listEl = document.getElementById("tournamentList");
+  const entryEl = document.getElementById("entryStatus");
+  if (!listEl || !entryEl) return; // not on tournaments page
+
+  // Demo tournament data (normally this would come from an API)
+  const TOURNAMENTS_KEY = "propteams_tournaments";
+  const ENTRIES_KEY = "propteams_entries";
+  const TEAM_KEY = "propteams_team";
+
+  // Seed demo tournament if none exists
+  function seedTournaments() {
+    const existing = JSON.parse(localStorage.getItem(TOURNAMENTS_KEY) || "[]");
+    if (existing.length) return existing;
+
+    const start = new Date();
+    const end = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 1 week later
+
+    const demo = [
+      {
+        id: "wk-" + start.toISOString().slice(0, 10),
+        name: "Weekly Props Cup",
+        prizePool: 500, // demo amount
+        maxTeams: 500, // demo cap
+        entered: 0, // will update when you enter
+        startsAt: start.toISOString(),
+        endsAt: end.toISOString(),
+        status: "open",
+      },
+    ];
+
+    localStorage.setItem(TOURNAMENTS_KEY, JSON.stringify(demo));
+    return demo;
+  }
+
+  function fmt(dateIso) {
+    const d = new Date(dateIso);
+    return d.toLocaleString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+
+  function load() {
+    return JSON.parse(localStorage.getItem(TOURNAMENTS_KEY) || "[]");
+  }
+  function save(list) {
+    localStorage.setItem(TOURNAMENTS_KEY, JSON.stringify(list));
+  }
+  function loadEntries() {
+    return JSON.parse(localStorage.getItem(ENTRIES_KEY) || "[]");
+  }
+  function saveEntries(entries) {
+    localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries));
+  }
+
+  // Render tournament cards
+  function render() {
+    const ts = load();
+    if (!ts.length) {
+      listEl.innerHTML = `<p class="note">No tournaments yet.</p>`;
+      return;
+    }
+
+    listEl.innerHTML = `
+      <div class="stack">
+        ${ts
+          .map(
+            (t) => `
+          <div class="card">
+            <div class="row">
+              <h3>${t.name}</h3>
+              <span class="badge">${t.status.toUpperCase()}</span>
+            </div>
+            <p class="meta">
+              Prize pool: $${t.prizePool} • Entries: ${t.entered}/${t.maxTeams}
+            </p>
+            <p class="small">
+              Starts: ${fmt(t.startsAt)} • Ends: ${fmt(t.endsAt)}
+            </p>
+            <div class="actions">
+              <button class="btn inline" data-enter="${t.id}" ${
+              t.status !== "open" ? "disabled" : ""
+            }>
+                Enter as my team →
+              </button>
+            </div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    `;
+
+    // Hook up Enter buttons
+    listEl.querySelectorAll("[data-enter]").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        enter(btn.getAttribute("data-enter"))
+      );
+    });
+  }
+
+  // Handle entering a tournament
+  function enter(tournamentId) {
+    const team = JSON.parse(localStorage.getItem(TEAM_KEY) || "null");
+    if (!team || !team.name) {
+      entryEl.innerHTML = `
+        <p class="error" style="margin-top:8px;">No team found. Create your team first.</p>
+        <div class="actions" style="margin-top:8px;">
+          <a class="btn inline" href="create-team.html">Create Team</a>
+        </div>
+      `;
+      return;
+    }
+
+    // Check if already entered
+    const entries = loadEntries();
+    const already = entries.find((e) => e.tournamentId === tournamentId);
+    if (already) {
+      entryEl.innerHTML = `
+        <p class="note">You already entered <strong>${team.name}</strong> in this tournament.</p>
+        <div class="actions" style="margin-top:8px;">
+          <a class="btn inline" href="create-team.html">View/Edit Team</a>
+        </div>
+      `;
+      return;
+    }
+
+    // Save entry
+    entries.push({
+      tournamentId,
+      teamName: team.name,
+      members: team.members || [],
+      enteredAt: new Date().toISOString(),
+    });
+    saveEntries(entries);
+
+    // Increment tournament entered count
+    const ts = load();
+    const t = ts.find((x) => x.id === tournamentId);
+    if (t) {
+      t.entered = (t.entered || 0) + 1;
+      save(ts);
+    }
+
+    entryEl.innerHTML = `
+      <p class="note">Entered as <strong>${team.name}</strong> ✅</p>
+    `;
+    render();
+  }
+
+  // Boot
+  seedTournaments();
+  render();
+});

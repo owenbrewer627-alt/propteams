@@ -189,3 +189,36 @@ p {
   color: var(--fg);
   border: 1px solid #303030;
 }
+/* ======== Tournament list ======== */
+.stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #000;
+  background: var(--accent);
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.meta {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+}
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.btn.inline {
+  width: auto;
+}
