@@ -1,27 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PropTeams — Create Team</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <header class="nav">
-    <div class="logo">PropTeams</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="signup.html">Sign Up</a>
-      <a href="create-team.html" class="active">Create Team</a>
-      <a href="tournaments.html">Tournaments</a>
-    </nav>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PropTeams — Create Team</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="logo">PropTeams</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="signup.html">Sign Up</a>
+        <a href="create-team.html" class="active">Create Team</a>
+        <a href="tournaments.html">Tournaments</a>
+      </nav>
+    </header>
 
-  <main class="container">
-    <h1>Create your squad</h1>
-    <p>(Team builder coming soon.)</p>
-  </main>
+    <main class="container">
+      <h1>Create your squad</h1>
+      <p>
+        Team of up to 4. You can leave blanks if you don’t have all names yet.
+      </p>
 
-  <script src="assets/js/app.js"></script>
-</body>
+      <form id="teamForm" class="form" novalidate>
+        <div class="field">
+          <label for="teamName">Team name</label>
+          <input
+            id="teamName"
+            name="teamName"
+            type="text"
+            placeholder="Example: The Cover Kings"
+            required
+          />
+          <small class="error" id="teamNameError"></small>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <label for="m1">Member 1</label>
+            <input id="m1" name="m1" type="text" placeholder="Name (you?)" />
+          </div>
+          <div class="field">
+            <label for="m2">Member 2</label>
+            <input id="m2" name="m2" type="text" placeholder="Name" />
+          </div>
+          <div class="field">
+            <label for="m3">Member 3</label>
+            <input id="m3" name="m3" type="text" placeholder="Name" />
+          </div>
+          <div class="field">
+            <label for="m4">Member 4</label>
+            <input id="m4" name="m4" type="text" placeholder="Name" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn">Save team</button>
+        <p class="note">
+          This saves to your browser only (demo). You can change it anytime.
+        </p>
+      </form>
+
+      <!-- Where the saved team will show up -->
+      <section id="teamSummary" style="margin-top: 24px"></section>
+    </main>
+
+    <script src="assets/js/app.js"></script>
+  </body>
 </html>

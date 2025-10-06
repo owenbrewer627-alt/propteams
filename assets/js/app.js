@@ -105,3 +105,107 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   });
 });
+// -------------------- Create Team logic --------------------
+document.addEventListener("DOMContentLoaded", () => {
+  // Only run on create-team.html
+  if (!location.pathname.endsWith("create-team.html")) return;
+
+  const form = document.getElementById("teamForm");
+  const teamNameEl = document.getElementById("teamName");
+  const teamNameError = document.getElementById("teamNameError");
+
+  const m1 = document.getElementById("m1");
+  const m2 = document.getElementById("m2");
+  const m3 = document.getElementById("m3");
+  const m4 = document.getElementById("m4");
+  const summary = document.getElementById("teamSummary");
+
+  const STORAGE_KEY = "propteams_team";
+
+  // Helper: render the saved team as a card
+  function renderTeamCard(team) {
+    if (!team) {
+      summary.innerHTML = "";
+      return;
+    }
+    const membersList = team.members.length
+      ? `<ul class="list">${team.members
+          .map((n) => `<li>${n}</li>`)
+          .join("")}</ul>`
+      : `<p class="note">No members added yet.</p>`;
+
+    summary.innerHTML = `
+      <div class="card">
+        <h3>Team: ${team.name}</h3>
+        <p class="note">Members</p>
+        ${membersList}
+        <div class="actions">
+          <button id="editTeam" class="btn secondary" type="button">Edit</button>
+          <button id="clearTeam" class="btn secondary" type="button">Clear</button>
+        </div>
+      </div>
+    `;
+
+    // Wire up buttons
+    document.getElementById("editTeam").onclick = () => {
+      // Put values back in the form
+      teamNameEl.value = team.name;
+      [m1, m2, m3, m4].forEach(
+        (input, i) => (input.value = team.members[i] || "")
+      );
+      // Scroll to form
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    document.getElementById("clearTeam").onclick = () => {
+      localStorage.removeItem(STORAGE_KEY);
+      renderTeamCard(null);
+    };
+  }
+
+  // On page load, prefill from storage if present
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && saved.name) {
+      renderTeamCard(saved);
+      // Optionally, also prefill the form:
+      teamNameEl.value = saved.name;
+      [m1, m2, m3, m4].forEach(
+        (input, i) => (input.value = saved.members[i] || "")
+      );
+    }
+  } catch {}
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    teamNameError.textContent = "";
+
+    const name = teamNameEl.value.trim();
+    if (!name) {
+      teamNameError.textContent = "Please enter a team name.";
+      return;
+    }
+
+    // Collect non-empty member names (max 4)
+    const members = [m1.value, m2.value, m3.value, m4.value]
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .slice(0, 4);
+
+    const team = { name, members, updatedAt: new Date().toISOString() };
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(team));
+    } catch {}
+
+    // Show success card
+    renderTeamCard(team);
+
+    // Simple success message
+    form.insertAdjacentHTML(
+      "beforebegin",
+      `<p class="note" id="teamSavedNote">Team saved ✅</p>`
+    );
+    setTimeout(() => document.getElementById("teamSavedNote")?.remove(), 1500);
+  });
+});
