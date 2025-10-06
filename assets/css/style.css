@@ -1,0 +1,80 @@
+/* ======== GENERAL PAGE STYLING ======== */
+:root {
+  --bg: #0e0e0e;
+  --fg: #ffffff;
+  --muted: #bdbdbd;
+  --accent: #00bcd4;
+}
+
+/* Reset some default spacing */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Set overall page look */
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* Centers main content */
+.container {
+  max-width: 960px;
+  margin: 100px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+/* ======== NAVBAR ======== */
+.nav {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #121212;
+  padding: 14px 20px;
+  border-bottom: 1px solid #1f1f1f;
+}
+
+/* Logo text in navbar */
+.logo {
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  font-size: 18px;
+}
+
+/* Nav links */
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 16px;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+/* Hover effect for nav links */
+.nav a:hover {
+  color: var(--fg);
+}
+
+/* Highlight for active page */
+.nav a.active {
+  color: #000000;
+  background-color: var(--accent);
+}
+
+/* ======== TEXT STYLING ======== */
+h1 {
+  color: var(--accent);
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+
+p {
+  color: var(--muted);
+  font-size: 18px;
+}
